@@ -11,12 +11,37 @@ import {
   clearCart,
   getCartTotal,
 } from "../../store/cartSlice";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_51QzjnkATEExbY1sHLOsOfDZNlViPJ7bYDE7EISq2cWsQQgOaFCvBX81Oowa2oo7eq5OlgN4hIh58daGVxCTc9g5z00FkWeFpif");
 
 const CartPage = () => {
   const dispatch = useDispatch();
   const carts = useSelector(getAllCarts);
   const { itemsCount, totalAmount } = useSelector((state) => state.cart);
 
+  const handleCheckout = async () => {
+    console.log("button clicked")
+    const stripe = await stripePromise;
+
+    const response = await fetch("http://localhost:8000/create-checkout-session", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        items: carts.map(item => ({
+          name: item.title, 
+          price: item.discountedPrice, 
+          quantity: item.quantity,
+        })),
+      }),
+    });
+    const { url } = await response.json();
+
+    // Open Stripe Checkout in a new tab
+    window.open(url, "_blank");
+    // const { url } = await response.json();
+    // window.location.href = url; // Redirect user to Stripe Checkout
+  };
   if (carts.length === 0) {
     return (
       <div className="container my-5">
@@ -148,6 +173,7 @@ const CartPage = () => {
               <button
                 type="button"
                 className="checkout-btn text-white bg-blue fs-16"
+                onClick={handleCheckout}
               >
                 Check Out
               </button>

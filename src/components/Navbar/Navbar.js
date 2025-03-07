@@ -77,7 +77,7 @@ const Navbar = () => {
               categories.slice(0, 8).map((category, idx) => (
                 <li className="nav-item no-wrap" key={idx}>
                   <Link
-                    to={`category/${category.url}`}
+                    to={`category/${category.slug}`}
                     className="nav-link text-capitalize"
                   >
                     {category.name} 
