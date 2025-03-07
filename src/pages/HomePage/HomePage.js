@@ -48,7 +48,7 @@ const HomePage = () => {
   let catProductsFour = products.filter(
     (product) => product.category === categories[3]
   );
-
+console.log(categories,"--=")
   return (
     <main>
       <div className="slider-wrapper">
@@ -70,7 +70,7 @@ const HomePage = () => {
 
             <div className="categories-item">
               <div className="title-md">
-                <h3>{categories[0]}</h3>
+                <h3>{categories[0]?.name}==========================</h3>
               </div>
               {productStatus === STATUS.LOADING ? (
                 <Loader />
@@ -81,7 +81,7 @@ const HomePage = () => {
 
             <div className="categories-item">
               <div className="title-md">
-                <h3>{categories[1]}</h3>
+                <h3>{categories[1]?.name}</h3>
               </div>
               {productStatus === STATUS.LOADING ? (
                 <Loader />
@@ -92,7 +92,7 @@ const HomePage = () => {
 
             <div className="categories-item">
               <div className="title-md">
-                <h3>{categories[2]}</h3>
+                <h3>{categories[2]?.name}</h3>
               </div>
               {productStatus === STATUS.LOADING ? (
                 <Loader />
@@ -103,7 +103,7 @@ const HomePage = () => {
 
             <div className="categories-item">
               <div className="title-md">
-                <h3>{categories[3]}</h3>
+                <h3>{categories[3]?.name}</h3>
               </div>
               {productStatus === STATUS.LOADING ? (
                 <Loader />

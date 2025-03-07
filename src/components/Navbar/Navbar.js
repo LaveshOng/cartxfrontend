@@ -27,8 +27,10 @@ const Navbar = () => {
     dispatch(getCartTotal());
   }, [carts]);
 
-  console.log(categories,"CATEGORIES")
-
+  // // console.log(categories,"CATEGORIES")
+  // if (!categories || categories.length === 0) {
+  //   return <p>Loading categories...</p>; // Show a loading message (or spinner)
+  // }
   return (
     <nav className="navbar">
       <div className="navbar-cnt flex align-center">
