@@ -21,7 +21,8 @@ const EmailConfirmationPage = () => {
           </div>
           <h1 className="email-confirmation-title">Check your email</h1>
           <p className="email-confirmation-message">
-            We've sent a verification link to <strong>{email}</strong>. Please check your email and click the link to verify your account.
+            We&apos;ve sent a verification link to <strong>{email}</strong>. Please check your email
+            and click the link to verify your account.
           </p>
           <div className="email-confirmation-actions">
             <button className="resend-btn" onClick={handleResendEmail}>
@@ -32,7 +33,7 @@ const EmailConfirmationPage = () => {
             </button>
           </div>
           <p className="email-confirmation-help">
-            Didn't receive the email? Check your spam folder or try a different email address.
+            Didn&apos;t receive the email? Check your spam folder or try a different email address.
           </p>
         </div>
       </div>
@@ -40,4 +41,4 @@ const EmailConfirmationPage = () => {
   );
 };
 
-export default EmailConfirmationPage; 
+export default EmailConfirmationPage;

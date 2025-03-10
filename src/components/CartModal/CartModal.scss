@@ -1,4 +1,4 @@
-@import "../../App.scss";
+@import '../../App.scss';
 
 .cart-modal {
   position: absolute;
@@ -31,7 +31,7 @@
 
   &::after {
     position: absolute;
-    content: "";
+    content: '';
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 13px solid $clr-white;

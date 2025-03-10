@@ -1,24 +1,21 @@
-import React, { useEffect, useState } from "react";
-import "./Navbar.scss";
-import { Link } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { setSidebarOn } from "../../store/sidebarSlice";
-import { getAllCategories } from "../../store/categorySlice";
-import {
-  getAllCarts,
-  getCartItemsCount,
-  getCartTotal,
-} from "../../store/cartSlice";
-import CartModal from "../CartModal/CartModal";
+import React, { useEffect, useState } from 'react';
+import './Navbar.scss';
+import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSidebarOn } from '../../store/sidebarSlice';
+import { setSignupModalOn } from '../../store/signupModalSlice';
+import { getAllCategories } from '../../store/categorySlice';
+import { getAllCarts, getCartItemsCount, getCartTotal } from '../../store/cartSlice';
+import CartModal from '../CartModal/CartModal';
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const categories = useSelector(getAllCategories);
   const carts = useSelector(getAllCarts);
   const itemsCount = useSelector(getCartItemsCount);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearchTerm = (e) => {
+  const handleSearchTerm = e => {
     e.preventDefault();
     setSearchTerm(e.target.value);
   };
@@ -53,14 +50,14 @@ const Navbar = () => {
                 className="sidebar-show-btn text-blue"
                 onClick={() => dispatch(setSidebarOn())}
               >
-                All <i class="fa-solid fa-circle-arrow-left"></i>
+                All <i className="fa-solid fa-circle-arrow-left"></i>
               </button>
 
               <input
                 type="text"
                 className="form-control fs-14"
                 placeholder="Search CartX"
-                onChange={(e) => handleSearchTerm(e)}
+                onChange={e => handleSearchTerm(e)}
               />
               <Link
                 to={`search/${searchTerm}`}
@@ -76,11 +73,8 @@ const Navbar = () => {
               // taking only first 8 categories
               categories.slice(0, 8).map((category, idx) => (
                 <li className="nav-item no-wrap" key={idx}>
-                  <Link
-                    to={`category/${category.slug}`}
-                    className="nav-link text-capitalize"
-                  >
-                    {category.name} 
+                  <Link to={`category/${category.slug}`} className="nav-link text-capitalize">
+                    {category.name}
                   </Link>
                 </li>
               ))
@@ -88,12 +82,17 @@ const Navbar = () => {
           </ul>
         </div>
 
-        <div className="navbar-cart flex align-center">
-          <Link to="/cart" className="cart-btn">
-            <i className="fa-solid fa-cart-shopping"></i>
-            <div className="cart-items-value">{itemsCount}</div>
-            <CartModal carts={carts} />
-          </Link>
+        <div className="navbar-actions flex align-center">
+          <button className="signup-btn" onClick={() => dispatch(setSignupModalOn())}>
+            Sign Up
+          </button>
+          <div className="navbar-cart flex align-center">
+            <Link to="/cart" className="cart-btn">
+              <i className="fa-solid fa-cart-shopping"></i>
+              <div className="cart-items-value">{itemsCount}</div>
+              <CartModal carts={carts} />
+            </Link>
+          </div>
         </div>
       </div>
     </nav>

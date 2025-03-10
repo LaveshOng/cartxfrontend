@@ -1,4 +1,4 @@
-@import "../../App.scss";
+@import '../../App.scss';
 
 .empty-cart {
   min-height: 60vh;
@@ -53,7 +53,8 @@
       margin-bottom: 2rem;
       padding-right: 2rem;
       padding-left: 2rem;
-      box-shadow: rgba(60, 64, 67, 0.01) 0px 1px 2px 0px,
+      box-shadow:
+        rgba(60, 64, 67, 0.01) 0px 1px 2px 0px,
         rgba(60, 64, 67, 0.01) 0px 1px 3px 1px;
       border-radius: 3px;
       color: rgba(0, 0, 0, 0.6);
@@ -61,7 +62,8 @@
     .cart-cbody {
       padding-right: 2rem;
       padding-left: 2rem;
-      box-shadow: rgba(60, 64, 67, 0.01) 0px 1px 2px 0px,
+      box-shadow:
+        rgba(60, 64, 67, 0.01) 0px 1px 2px 0px,
         rgba(60, 64, 67, 0.01) 0px 1px 3px 1px;
       border-radius: 3px;
       font-size: 14.5px;

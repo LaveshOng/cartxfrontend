@@ -12,29 +12,26 @@ class ApiClient {
       ...options.headers,
     };
 
-    try {
-      const response = await fetch(url, {
-        ...options,
-        headers,
-      });
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(JSON.stringify(error));
-      }
-
-      return await response.json();
-    } catch (error) {
-      throw error;
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(JSON.stringify(error));
     }
+
+    return await response.json();
   }
 
   auth = {
-    register: (data) => this.request('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    }),
+    register: data =>
+      this.request('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
   };
 }
 
-export const apiClient = new ApiClient(); 
+export const apiClient = new ApiClient();

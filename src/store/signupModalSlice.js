@@ -1,22 +1,22 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  isSignupModalOn: false
+  isSignupModalOn: false,
 };
 
 const signupModalSlice = createSlice({
-  name: "signupModal",
+  name: 'signupModal',
   initialState,
   reducers: {
-    setSignupModalOn: (state) => {
+    setSignupModalOn: state => {
       state.isSignupModalOn = true;
     },
-    setSignupModalOff: (state) => {
+    setSignupModalOff: state => {
       state.isSignupModalOn = false;
-    }
-  }
+    },
+  },
 });
 
 export const { setSignupModalOn, setSignupModalOff } = signupModalSlice.actions;
-export const getSignupModalStatus = (state) => state.signupModal.isSignupModalOn;
-export default signupModalSlice.reducer; 
+export const getSignupModalStatus = state => state.signupModal.isSignupModalOn;
+export default signupModalSlice.reducer;

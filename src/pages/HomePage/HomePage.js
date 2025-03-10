@@ -1,16 +1,12 @@
-import React, { useEffect } from "react";
-import "./HomePage.scss";
-import HeaderSlider from "../../components/Slider/HeaderSlider";
-import { useSelector, useDispatch } from "react-redux";
-import { getAllCategories } from "../../store/categorySlice";
-import ProductList from "../../components/ProductList/ProductList";
-import {
-  fetchAsyncProducts,
-  getAllProducts,
-  getAllProductsStatus,
-} from "../../store/productSlice";
-import Loader from "../../components/Loader/Loader";
-import { STATUS } from "../../utils/status";
+import React, { useEffect } from 'react';
+import './HomePage.scss';
+import HeaderSlider from '../../components/Slider/HeaderSlider';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllCategories } from '../../store/categorySlice';
+import ProductList from '../../components/ProductList/ProductList';
+import { fetchAsyncProducts, getAllProducts, getAllProductsStatus } from '../../store/productSlice';
+import Loader from '../../components/Loader/Loader';
+import { STATUS } from '../../utils/status';
 
 const HomePage = () => {
   const dispatch = useDispatch();
@@ -36,19 +32,11 @@ const HomePage = () => {
     }
   }
 
-  let catProductsOne = products.filter(
-    (product) => product.category === categories[0]
-  );
-  let catProductsTwo = products.filter(
-    (product) => product.category === categories[1]
-  );
-  let catProductsThree = products.filter(
-    (product) => product.category === categories[2]
-  );
-  let catProductsFour = products.filter(
-    (product) => product.category === categories[3]
-  );
-console.log(categories,"--=")
+  let catProductsOne = products.filter(product => product.category === categories[0]);
+  let catProductsTwo = products.filter(product => product.category === categories[1]);
+  let catProductsThree = products.filter(product => product.category === categories[2]);
+  let catProductsFour = products.filter(product => product.category === categories[3]);
+  console.log(categories, '--=');
   return (
     <main>
       <div className="slider-wrapper">

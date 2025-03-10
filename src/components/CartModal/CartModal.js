@@ -1,7 +1,7 @@
-import React from "react";
-import "./CartModal.scss";
-import { shopping_cart } from "../../utils/images";
-import { formatPrice } from "../../utils/helpers";
+import React from 'react';
+import './CartModal.scss';
+import { shopping_cart } from '../../utils/images';
+import { formatPrice } from '../../utils/helpers';
 
 const CartModal = ({ carts }) => {
   return (
@@ -11,12 +11,9 @@ const CartModal = ({ carts }) => {
       </h5>
       {carts?.length > 0 ? (
         <div className="cart-modal-list grid">
-          {carts.map((cart) => {
+          {carts.map(cart => {
             return (
-              <div
-                className="cart-modal-item grid align-center font-manrope py-2"
-                key={cart.id}
-              >
+              <div className="cart-modal-item grid align-center font-manrope py-2" key={cart.id}>
                 <div className="cart-modal-item-img">
                   <img src={cart?.thumbnail} alt="" className="img-cover" />
                 </div>

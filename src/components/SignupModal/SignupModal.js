@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { apiClient } from '../../utils/apiClient';
+import { useToast } from '../../context/ToastContext';
 import './SignupModal.scss';
 
 const SOCIAL_PROVIDERS = [
@@ -7,41 +9,42 @@ const SOCIAL_PROVIDERS = [
     id: 'google',
     name: 'Google',
     icon: '/icons/google-icon.svg',
-    className: 'bg-white hover:bg-gray-50 text-gray-700'
+    className: 'bg-white text-gray-700',
   },
   {
     id: 'microsoft',
     name: 'Microsoft',
     icon: '/icons/microsoft-icon.svg',
-    className: 'bg-[#2F2F2F] hover:bg-black text-white'
+    className: 'bg-[#2F2F2F] text-white',
   },
   {
     id: 'apple',
     name: 'Apple',
     icon: '/icons/apple-icon.svg',
-    className: 'bg-white hover:bg-gray-50 text-gray-700'
-  }
+    className: 'bg-white text-gray-700',
+  },
 ];
 
 const SignupModal = ({ onClose }) => {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   const [formState, setFormState] = useState({
     email: '',
     isValidEmail: true,
-    isLoading: false
+    isLoading: false,
   });
 
-  const validateEmail = (email) => {
+  const validateEmail = email => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = e => {
     const { value } = e.target;
-    setFormState((prev) => ({
+    setFormState(prev => ({
       ...prev,
       email: value,
-      isValidEmail: true
+      isValidEmail: true,
     }));
   };
 
@@ -49,34 +52,34 @@ const SignupModal = ({ onClose }) => {
     const { email } = formState;
 
     if (!validateEmail(email)) {
-      setFormState((prev) => ({ ...prev, isValidEmail: false }));
+      setFormState(prev => ({ ...prev, isValidEmail: false }));
       return;
     }
 
-    setFormState((prev) => ({ ...prev, isLoading: true }));
+    setFormState(prev => ({ ...prev, isLoading: true }));
     sessionStorage.setItem('userEmail', email);
 
     try {
-      // TODO: Implement your API call here
-      // await apiClient.auth.register({ email });
-      // Toast.success('Verification email sent successfully!');
+      await apiClient.auth.register({ email });
+      showToast('Verification email sent successfully!', 'success');
       onClose();
       navigate('/email-confirmation', { state: { email } });
     } catch (error) {
-      // Toast.error(JSON.parse(error.message).data.error || 'Email verification failed');
+      const errorMessage = JSON.parse(error.message).data.error || 'Email verification failed';
+      showToast(errorMessage, 'error');
       console.error('Email verification failed:', error);
     } finally {
-      setFormState((prev) => ({ ...prev, isLoading: false }));
+      setFormState(prev => ({ ...prev, isLoading: false }));
     }
   };
 
-  const handleSocialLogin = (provider) => {
+  const handleSocialLogin = provider => {
     try {
       onClose();
       const baseUrl = process.env.REACT_APP_API_URL;
       window.location.href = `${baseUrl}/auth/${provider}`;
     } catch (error) {
-      // Toast.error(`Failed to connect with ${provider}`);
+      showToast(`Failed to connect with ${provider}`, 'error');
       console.error(`Failed to connect with ${provider}:`, error);
     }
   };
@@ -92,7 +95,7 @@ const SignupModal = ({ onClose }) => {
         </div>
 
         <div className="signup-modal-social">
-          {SOCIAL_PROVIDERS.map((provider) => (
+          {SOCIAL_PROVIDERS.map(provider => (
             <button
               key={provider.id}
               onClick={() => handleSocialLogin(provider.id)}
@@ -121,22 +124,15 @@ const SignupModal = ({ onClose }) => {
             />
             {!isValidEmail && <p className="error-message">Please enter a valid email address</p>}
           </div>
-          <button
-            onClick={handleEmailSubmit}
-            disabled={isLoading}
-            className="submit-btn"
-          >
-            {isLoading ? (
-              <div className="loader"></div>
-            ) : (
-              'Verify email'
-            )}
+          <button onClick={handleEmailSubmit} disabled={isLoading} className="submit-btn">
+            {isLoading ? <div className="loader"></div> : 'Verify email'}
           </button>
         </div>
 
         <p className="privacy-notice">
-          We&apos;re committed to your privacy. CartX uses the information you provide to contact you about our relevant content,
-          products, and services. You may unsubscribe from these communications at any time. For more information, check out our{' '}
+          We&apos;re committed to your privacy. CartX uses the information you provide to contact
+          you about our relevant content, products, and services. You may unsubscribe from these
+          communications at any time. For more information, check out our{' '}
           <a href="/privacy" className="privacy-link">
             Privacy Policy
           </a>
@@ -146,4 +142,4 @@ const SignupModal = ({ onClose }) => {
   );
 };
 
-export default SignupModal; 
+export default SignupModal;
