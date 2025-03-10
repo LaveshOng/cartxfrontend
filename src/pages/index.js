@@ -1,8 +1,19 @@
-import Home from '../pages/HomePage/HomePage';
-import Cart from '../pages/CartPage/CartPage';
-import CategoryProduct from '../pages/CategoryProductPage/CategoryProductPage';
+import Home from './HomePage/HomePage';
+import Cart from './CartPage/CartPage';
+import CategoryProduct from './CategoryProductPage/CategoryProductPage';
 import ProductSingle from './ProductSinglePage/ProductSinglePage';
 import Search from './SearchPage/SearchPage';
 import EmailConfirmationPage from './EmailConfirmationPage/EmailConfirmationPage';
+import SignupPage from './SignupPage';
+import SigninPage from './SigninPage';
 
-export { Home, CategoryProduct, ProductSingle, Cart, Search, EmailConfirmationPage };
+export {
+  Home,
+  Cart,
+  CategoryProduct,
+  ProductSingle,
+  Search,
+  EmailConfirmationPage,
+  SignupPage,
+  SigninPage,
+};

@@ -3,7 +3,7 @@ import './Navbar.scss';
 import { Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setSidebarOn } from '../../store/sidebarSlice';
-import { setSignupModalOn } from '../../store/signupModalSlice';
+import { setSignupModalOn, setSigninModalOn } from '../../store/signupModalSlice';
 import { getAllCategories } from '../../store/categorySlice';
 import { getAllCarts, getCartItemsCount, getCartTotal } from '../../store/cartSlice';
 import CartModal from '../CartModal/CartModal';
@@ -83,10 +83,21 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions flex align-center">
-          <button className="signup-btn" onClick={() => dispatch(setSignupModalOn())}>
-            Sign Up
-          </button>
-          <div className="navbar-cart flex align-center">
+          <div className="auth-buttons flex align-center gap-2">
+            <button
+              className="signin-btn px-4 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
+              onClick={() => dispatch(setSigninModalOn())}
+            >
+              Sign In
+            </button>
+            <button
+              className="signup-btn px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+              onClick={() => dispatch(setSignupModalOn())}
+            >
+              Sign Up
+            </button>
+          </div>
+          <div className="navbar-cart flex align-center ml-4">
             <Link to="/cart" className="cart-btn">
               <i className="fa-solid fa-cart-shopping"></i>
               <div className="cart-items-value">{itemsCount}</div>

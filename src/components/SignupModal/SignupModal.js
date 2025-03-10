@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { apiClient } from '../../utils/apiClient';
 import { useToast } from '../../context/ToastContext';
+import {
+  setSignupModalOff,
+  setSigninModalOff,
+  getSignupModalStatus,
+  getSigninModalStatus,
+} from '../../store/signupModalSlice';
 import './SignupModal.scss';
 
 const SOCIAL_PROVIDERS = [
@@ -25,11 +32,18 @@ const SOCIAL_PROVIDERS = [
   },
 ];
 
-const SignupModal = ({ onClose }) => {
+const SignupModal = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { showToast } = useToast();
+  const isSignupModalOn = useSelector(getSignupModalStatus);
+  const isSigninModalOn = useSelector(getSigninModalStatus);
   const [formState, setFormState] = useState({
+    firstName: '',
+    lastName: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     isValidEmail: true,
     isLoading: false,
   });
@@ -48,26 +62,95 @@ const SignupModal = ({ onClose }) => {
     }));
   };
 
-  const handleEmailSubmit = async () => {
-    const { email } = formState;
+  const handlePasswordChange = e => {
+    const { value } = e.target;
+    setFormState(prev => ({
+      ...prev,
+      password: value,
+    }));
+  };
+
+  const handleFirstNameChange = e => {
+    const { value } = e.target;
+    setFormState(prev => ({
+      ...prev,
+      firstName: value,
+    }));
+  };
+
+  const handleLastNameChange = e => {
+    const { value } = e.target;
+    setFormState(prev => ({
+      ...prev,
+      lastName: value,
+    }));
+  };
+
+  const handleConfirmPasswordChange = e => {
+    const { value } = e.target;
+    setFormState(prev => ({
+      ...prev,
+      confirmPassword: value,
+    }));
+  };
+
+  const handleEmailSubmit = async e => {
+    e?.preventDefault();
+    const { firstName, lastName, email, password, confirmPassword } = formState;
 
     if (!validateEmail(email)) {
       setFormState(prev => ({ ...prev, isValidEmail: false }));
       return;
     }
 
+    if (!password) {
+      showToast('Please enter your password', 'error');
+      return;
+    }
+
+    if (isSignupModalOn) {
+      if (!firstName.trim()) {
+        showToast('Please enter your first name', 'error');
+        return;
+      }
+      if (!lastName.trim()) {
+        showToast('Please enter your last name', 'error');
+        return;
+      }
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
+    }
+
     setFormState(prev => ({ ...prev, isLoading: true }));
-    sessionStorage.setItem('userEmail', email);
 
     try {
-      await apiClient.auth.register({ email });
-      showToast('Verification email sent successfully!', 'success');
-      onClose();
-      navigate('/email-confirmation', { state: { email } });
+      if (isSignupModalOn) {
+        await apiClient.auth.register({
+          firstName,
+          lastName,
+          email,
+          password,
+        });
+        showToast('Registration successful! Please check your email for verification.', 'success');
+        dispatch(setSignupModalOff());
+        navigate('/email-confirmation', { state: { email } });
+      } else {
+        const response = await apiClient.auth.login({ email, password });
+        if (response.status === 'success') {
+          showToast('Successfully logged in!', 'success');
+          dispatch(setSigninModalOff());
+        } else {
+          throw new Error(response.message || 'Login failed');
+        }
+      }
     } catch (error) {
-      const errorMessage = JSON.parse(error.message).data.error || 'Email verification failed';
+      const errorMessage = error.message
+        ? JSON.parse(error.message).data.error
+        : 'Authentication failed';
       showToast(errorMessage, 'error');
-      console.error('Email verification failed:', error);
+      console.error('Authentication failed:', error);
     } finally {
       setFormState(prev => ({ ...prev, isLoading: false }));
     }
@@ -75,7 +158,11 @@ const SignupModal = ({ onClose }) => {
 
   const handleSocialLogin = provider => {
     try {
-      onClose();
+      if (isSignupModalOn) {
+        dispatch(setSignupModalOff());
+      } else {
+        dispatch(setSigninModalOff());
+      }
       const baseUrl = process.env.REACT_APP_API_URL;
       window.location.href = `${baseUrl}/auth/${provider}`;
     } catch (error) {
@@ -84,14 +171,39 @@ const SignupModal = ({ onClose }) => {
     }
   };
 
-  const { email, isValidEmail, isLoading } = formState;
+  const handleClose = () => {
+    dispatch(setSignupModalOff());
+    dispatch(setSigninModalOff());
+  };
+
+  const handleClickOutside = e => {
+    if (e.target.classList.contains('signup-modal')) {
+      handleClose();
+    }
+  };
+
+  const { firstName, lastName, email, password, confirmPassword, isValidEmail, isLoading } =
+    formState;
+  const isSignup = isSignupModalOn;
 
   return (
-    <div className="signup-modal">
+    <div className="signup-modal" onClick={handleClickOutside}>
       <div className="signup-modal-content">
         <div className="signup-modal-header">
-          <h2 className="text-2xl font-bold text-gray-900">Create your free account</h2>
-          <p className="text-gray-600 mt-2">100% free. No credit card needed.</p>
+          <button
+            onClick={handleClose}
+            className="close-button"
+            aria-label="Close modal"
+            type="button"
+          >
+            <i className="fas fa-times"></i>
+          </button>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isSignup ? 'Create your free account' : 'Sign in to your account'}
+          </h2>
+          <p className="text-gray-600 mt-2">
+            {isSignup ? '100% free. No credit card needed.' : 'Welcome back!'}
+          </p>
         </div>
 
         <div className="signup-modal-social">
@@ -113,7 +225,29 @@ const SignupModal = ({ onClose }) => {
           <span className="divider-text">Or</span>
         </div>
 
-        <div className="signup-modal-form">
+        <form onSubmit={handleEmailSubmit} className="signup-modal-form">
+          {isSignup && (
+            <>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="First Name"
+                  value={firstName}
+                  onChange={handleFirstNameChange}
+                  className="form-input"
+                />
+              </div>
+              <div className="form-group">
+                <input
+                  type="text"
+                  placeholder="Last Name"
+                  value={lastName}
+                  onChange={handleLastNameChange}
+                  className="form-input"
+                />
+              </div>
+            </>
+          )}
           <div className="form-group">
             <input
               type="email"
@@ -124,19 +258,41 @@ const SignupModal = ({ onClose }) => {
             />
             {!isValidEmail && <p className="error-message">Please enter a valid email address</p>}
           </div>
-          <button onClick={handleEmailSubmit} disabled={isLoading} className="submit-btn">
-            {isLoading ? <div className="loader"></div> : 'Verify email'}
+          <div className="form-group">
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={handlePasswordChange}
+              className="form-input"
+            />
+          </div>
+          {isSignup && (
+            <div className="form-group">
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={handleConfirmPasswordChange}
+                className="form-input"
+              />
+            </div>
+          )}
+          <button type="submit" disabled={isLoading} className="submit-btn">
+            {isLoading ? <div className="loader"></div> : isSignup ? 'Sign Up' : 'Sign In'}
           </button>
-        </div>
+        </form>
 
-        <p className="privacy-notice">
-          We&apos;re committed to your privacy. CartX uses the information you provide to contact
-          you about our relevant content, products, and services. You may unsubscribe from these
-          communications at any time. For more information, check out our{' '}
-          <a href="/privacy" className="privacy-link">
-            Privacy Policy
-          </a>
-        </p>
+        {isSignup && (
+          <p className="privacy-notice">
+            We&apos;re committed to your privacy. CartX uses the information you provide to contact
+            you about our relevant content, products, and services. You may unsubscribe from these
+            communications at any time. For more information, check out our{' '}
+            <a href="/privacy" className="privacy-link">
+              Privacy Policy
+            </a>
+          </p>
+        )}
       </div>
     </div>
   );

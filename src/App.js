@@ -1,6 +1,6 @@
 import './App.scss';
 // react router v6
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 // pages
 import {
   Home,
@@ -17,49 +17,38 @@ import Footer from './components/Footer/Footer';
 import SignupModal from './components/SignupModal/SignupModal';
 import store from './store/store';
 import { Provider } from 'react-redux';
-import { useSelector, useDispatch } from 'react-redux';
-import { getSignupModalStatus, setSignupModalOff } from './store/signupModalSlice';
+import { useSelector } from 'react-redux';
+import { getSignupModalStatus, getSigninModalStatus } from './store/signupModalSlice';
 import { ToastProvider } from './context/ToastContext';
+import AppContent from './components/AppContent';
 
-function AppContent() {
+function AppContentWrapper() {
   const isSignupModalOn = useSelector(getSignupModalStatus);
-  const dispatch = useDispatch();
+  const isSigninModalOn = useSelector(getSigninModalStatus);
 
   return (
-    <BrowserRouter>
-      <Header />
-      <Sidebar />
-
-      <Routes>
-        {/* home page route */}
-        <Route path="/" element={<Home />} />
-        {/* single product route */}
-        <Route path="/product/:id" element={<ProductSingle />} />
-        {/* category wise product listing route */}
-        <Route path="/category/:category" element={<CategoryProduct />} />
-        {/* cart */}
-        <Route path="/cart" element={<Cart />} />
-        {/* searched products */}
-        <Route path="/search/:searchTerm" element={<Search />} />
-        {/* email confirmation */}
-        <Route path="/email-confirmation" element={<EmailConfirmationPage />} />
-      </Routes>
-
-      <Footer />
-      {isSignupModalOn && <SignupModal onClose={() => dispatch(setSignupModalOff())} />}
-    </BrowserRouter>
+    <div className="App">
+      <AppContent />
+      {(isSignupModalOn || isSigninModalOn) && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <SignupModal />
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
 function App() {
   return (
-    <Provider store={store}>
-      <ToastProvider>
-        <div className="App">
-          <AppContent />
-        </div>
-      </ToastProvider>
-    </Provider>
+    <BrowserRouter>
+      <Provider store={store}>
+        <ToastProvider>
+          <AppContentWrapper />
+        </ToastProvider>
+      </Provider>
+    </BrowserRouter>
   );
 }
 
