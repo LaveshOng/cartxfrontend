@@ -14,6 +14,7 @@ import {
   EmailConfirmationPage,
 } from '../pages/index';
 import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
+import AuthCallback from '../pages/AuthCallback/AuthCallback';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -38,6 +39,8 @@ function AppContent() {
         <Route path="/email-confirmation" element={<EmailConfirmationPage />} />
         {/* email verification */}
         <Route path="/verify-email" element={<VerifyEmail />} />
+        {/* social auth callback */}
+        <Route path="/auth/success" element={<AuthCallback />} />
       </Routes>
 
       <Footer />
