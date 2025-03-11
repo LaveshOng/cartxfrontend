@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
 
 class ApiClient {
   constructor() {
@@ -30,6 +30,21 @@ class ApiClient {
       this.request('/auth/register', {
         method: 'POST',
         body: JSON.stringify(data),
+      }),
+
+    login: data =>
+      this.request('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+
+    verifyEmail: token =>
+      this.request('/auth/verify-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }), // Send token in correct format
       }),
   };
 }

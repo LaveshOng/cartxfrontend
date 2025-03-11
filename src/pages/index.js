@@ -6,6 +6,7 @@ import Search from './SearchPage/SearchPage';
 import EmailConfirmationPage from './EmailConfirmationPage/EmailConfirmationPage';
 import SignupPage from './SignupPage';
 import SigninPage from './SigninPage';
+import VerifyEmail from './VerifyEmail/VerifyEmail';
 
 export {
   Home,
@@ -16,4 +17,5 @@ export {
   EmailConfirmationPage,
   SignupPage,
   SigninPage,
+  VerifyEmail,
 };

@@ -13,6 +13,7 @@ import {
   Search,
   EmailConfirmationPage,
 } from '../pages/index';
+import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -35,6 +36,8 @@ function AppContent() {
         <Route path="/search/:searchTerm" element={<Search />} />
         {/* email confirmation */}
         <Route path="/email-confirmation" element={<EmailConfirmationPage />} />
+        {/* email verification */}
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
 
       <Footer />
