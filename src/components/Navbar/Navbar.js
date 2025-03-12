@@ -83,18 +83,13 @@ const Navbar = () => {
         </div>
 
         <div className="navbar-actions flex align-center">
-          <div className="auth-buttons flex align-center gap-2">
+          <div className="auth-buttons flex align-center">
             <button
-              className="signin-btn px-4 py-2 text-purple-600 hover:text-purple-700 font-medium transition-colors"
-              onClick={() => dispatch(setSigninModalOn())}
-            >
-              Sign In
-            </button>
-            <button
-              className="signup-btn px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+              className="account-btn px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-2"
               onClick={() => dispatch(setSignupModalOn())}
             >
-              Sign Up
+              <i className="fas fa-user"></i>
+              Account
             </button>
           </div>
           <div className="navbar-cart flex align-center ml-4">

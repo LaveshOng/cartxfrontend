@@ -26,7 +26,7 @@ const CartPage = () => {
     console.log('button clicked');
     const stripe = await stripePromise;
 
-    const response = await fetch('http://localhost:8000/create-checkout-session', {
+    const response = await fetch('http://localhost:8000/api/stripe/create-checkout-session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

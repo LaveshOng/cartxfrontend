@@ -1,14 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { apiClient } from '../../utils/apiClient';
 import { useToast } from '../../context/ToastContext';
-import {
-  setSignupModalOff,
-  setSigninModalOff,
-  getSignupModalStatus,
-  getSigninModalStatus,
-} from '../../store/signupModalSlice';
+import { setSignupModalOff } from '../../store/signupModalSlice';
 import './SignupModal.scss';
 
 const SOCIAL_PROVIDERS = [
@@ -36,8 +31,7 @@ const SignupModal = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { showToast } = useToast();
-  const isSignupModalOn = useSelector(getSignupModalStatus);
-  const isSigninModalOn = useSelector(getSigninModalStatus);
+  const [isSignupMode, setIsSignupMode] = useState(true);
   const [formState, setFormState] = useState({
     firstName: '',
     lastName: '',
@@ -108,7 +102,7 @@ const SignupModal = () => {
       return;
     }
 
-    if (isSignupModalOn) {
+    if (isSignupMode) {
       if (!firstName.trim()) {
         showToast('Please enter your first name', 'error');
         return;
@@ -126,7 +120,7 @@ const SignupModal = () => {
     setFormState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      if (isSignupModalOn) {
+      if (isSignupMode) {
         await apiClient.auth.register({
           firstName,
           lastName,
@@ -140,7 +134,7 @@ const SignupModal = () => {
         const response = await apiClient.auth.login({ email, password });
         if (response.status === 'success') {
           showToast('Successfully logged in!', 'success');
-          dispatch(setSigninModalOff());
+          dispatch(setSignupModalOff());
         } else {
           throw new Error(response.message || 'Login failed');
         }
@@ -158,11 +152,7 @@ const SignupModal = () => {
 
   const handleSocialLogin = provider => {
     try {
-      if (isSignupModalOn) {
-        dispatch(setSignupModalOff());
-      } else {
-        dispatch(setSigninModalOff());
-      }
+      dispatch(setSignupModalOff());
       const baseUrl = process.env.REACT_APP_API_URL;
       window.location.href = `${baseUrl}/auth/${provider}`;
     } catch (error) {
@@ -173,7 +163,6 @@ const SignupModal = () => {
 
   const handleClose = () => {
     dispatch(setSignupModalOff());
-    dispatch(setSigninModalOff());
   };
 
   const handleClickOutside = e => {
@@ -182,9 +171,21 @@ const SignupModal = () => {
     }
   };
 
+  const toggleMode = () => {
+    setIsSignupMode(!isSignupMode);
+    setFormState(prev => ({
+      ...prev,
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      isValidEmail: true,
+    }));
+  };
+
   const { firstName, lastName, email, password, confirmPassword, isValidEmail, isLoading } =
     formState;
-  const isSignup = isSignupModalOn;
 
   return (
     <div className="signup-modal" onClick={handleClickOutside}>
@@ -199,10 +200,10 @@ const SignupModal = () => {
             <i className="fas fa-times"></i>
           </button>
           <h2 className="text-2xl font-bold text-gray-900">
-            {isSignup ? 'Create your free account' : 'Sign in to your account'}
+            {isSignupMode ? 'Create your free account' : 'Sign in to your account'}
           </h2>
           <p className="text-gray-600 mt-2">
-            {isSignup ? '100% free. No credit card needed.' : 'Welcome back!'}
+            {isSignupMode ? '100% free. No credit card needed.' : 'Welcome back!'}
           </p>
         </div>
 
@@ -226,7 +227,7 @@ const SignupModal = () => {
         </div>
 
         <form onSubmit={handleEmailSubmit} className="signup-modal-form">
-          {isSignup && (
+          {isSignupMode && (
             <>
               <div className="form-group">
                 <input
@@ -267,7 +268,7 @@ const SignupModal = () => {
               className="form-input"
             />
           </div>
-          {isSignup && (
+          {isSignupMode && (
             <div className="form-group">
               <input
                 type="password"
@@ -279,11 +280,20 @@ const SignupModal = () => {
             </div>
           )}
           <button type="submit" disabled={isLoading} className="submit-btn">
-            {isLoading ? <div className="loader"></div> : isSignup ? 'Sign Up' : 'Sign In'}
+            {isLoading ? <div className="loader"></div> : isSignupMode ? 'Sign Up' : 'Sign In'}
           </button>
         </form>
 
-        {isSignup && (
+        <div className="toggle-mode">
+          <p>
+            {isSignupMode ? 'Already have an account?' : "Don't have an account?"}{' '}
+            <button onClick={toggleMode} className="toggle-btn">
+              {isSignupMode ? 'Sign In' : 'Sign Up'}
+            </button>
+          </p>
+        </div>
+
+        {isSignupMode && (
           <p className="privacy-notice">
             We&apos;re committed to your privacy. CartX uses the information you provide to contact
             you about our relevant content, products, and services. You may unsubscribe from these
