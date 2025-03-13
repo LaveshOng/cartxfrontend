@@ -15,6 +15,7 @@ import {
 } from '../pages/index';
 import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
 import AuthCallback from '../pages/AuthCallback/AuthCallback';
+import CheckoutPage from '../pages/CheckoutPage/CheckoutPage';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -33,6 +34,8 @@ function AppContent() {
         <Route path="/category/:category" element={<CategoryProduct />} />
         {/* cart */}
         <Route path="/cart" element={<Cart />} />
+        {/* checkout */}
+        <Route path="/checkout" element={<CheckoutPage />} />
         {/* searched products */}
         <Route path="/search/:searchTerm" element={<Search />} />
         {/* email confirmation */}

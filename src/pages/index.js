@@ -7,6 +7,7 @@ import EmailConfirmationPage from './EmailConfirmationPage/EmailConfirmationPage
 import SignupPage from './SignupPage';
 import SigninPage from './SigninPage';
 import VerifyEmail from './VerifyEmail/VerifyEmail';
+import CheckoutPage from './CheckoutPage/CheckoutPage';
 
 export {
   Home,
@@ -18,4 +19,5 @@ export {
   SignupPage,
   SigninPage,
   VerifyEmail,
+  CheckoutPage,
 };
