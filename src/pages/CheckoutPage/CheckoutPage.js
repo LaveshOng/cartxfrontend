@@ -18,13 +18,15 @@ const CheckoutPage = () => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressLoading, setIsAddressLoading] = useState(false);
   const deliveryCharge = 40; // Fixed delivery charge for now
-
+  console.log(carts, 'carts');
   useEffect(() => {
     checkAuthAndFetchAddresses();
     dispatch(getCartTotal());
   }, [dispatch]);
 
+  console.log(selectedAddress, 'selectedAddress');
   const checkAuthAndFetchAddresses = async () => {
     try {
       const response = await apiClient.auth.checkAuth();
@@ -33,7 +35,7 @@ const CheckoutPage = () => {
         navigate('/login');
         return;
       }
-      fetchAddresses();
+      await fetchAddresses();
     } catch (error) {
       console.error('Auth check failed:', error);
       showToast('Please login to continue with checkout', 'error');
@@ -43,7 +45,9 @@ const CheckoutPage = () => {
 
   const fetchAddresses = async () => {
     try {
+      setIsAddressLoading(true);
       const response = await apiClient.address.getAll();
+      console.log(response, 'response');
       if (response.status === 'success') {
         setAddresses(response.data);
         const defaultAddress = response.data.find(addr => addr.isDefault);
@@ -52,32 +56,40 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error('Failed to fetch addresses:', error);
       showToast('Failed to load addresses', 'error');
+    } finally {
+      setIsAddressLoading(false);
     }
   };
 
   const handleAddressSubmit = async addressData => {
     try {
+      setIsAddressLoading(true);
       const response = await apiClient.address.add(addressData);
       if (response.status === 'success') {
         showToast('Address added successfully', 'success');
         setShowAddressForm(false);
-        fetchAddresses();
+        await fetchAddresses(); // Wait for addresses to be fetched
       }
     } catch (error) {
       console.error('Failed to add address:', error);
       showToast('Failed to add address', 'error');
+    } finally {
+      setIsAddressLoading(false);
     }
   };
 
   const handleSetDefaultAddress = async addressId => {
     try {
+      setIsAddressLoading(true);
       const response = await apiClient.address.setDefault(addressId);
       if (response.status === 'success') {
-        fetchAddresses();
+        await fetchAddresses(); // Wait for addresses to be fetched
       }
     } catch (error) {
       console.error('Failed to set default address:', error);
       showToast('Failed to set default address', 'error');
+    } finally {
+      setIsAddressLoading(false);
     }
   };
 
@@ -131,7 +143,9 @@ const CheckoutPage = () => {
         <div className="checkout-content">
           <div className="delivery-section">
             <h2>Delivery Address</h2>
-            {addresses.length > 0 ? (
+            {isAddressLoading ? (
+              <div className="loading-spinner">Loading addresses...</div>
+            ) : addresses.length > 0 ? (
               <div className="addresses-list">
                 {addresses.map(address => (
                   <div
@@ -162,9 +176,15 @@ const CheckoutPage = () => {
                   </div>
                 ))}
               </div>
-            ) : null}
+            ) : (
+              <p className="no-addresses">No addresses found. Please add a new address.</p>
+            )}
 
-            <button onClick={() => setShowAddressForm(true)} className="add-address-btn">
+            <button
+              onClick={() => setShowAddressForm(true)}
+              className="add-address-btn"
+              disabled={isAddressLoading}
+            >
               Add New Address
             </button>
           </div>
@@ -176,7 +196,9 @@ const CheckoutPage = () => {
                 <div key={item.id} className="summary-item">
                   <span className="item-name">{item.title}</span>
                   <span className="item-quantity">x{item.quantity}</span>
-                  <span className="item-price">₹{item.discountedPrice * item.quantity}</span>
+                  <span className="item-price">
+                    ${Math.round(item.discountedPrice * item.quantity)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -208,7 +230,11 @@ const CheckoutPage = () => {
       {showAddressForm && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <AddressForm onSubmit={handleAddressSubmit} onClose={() => setShowAddressForm(false)} />
+            <AddressForm
+              onSubmit={handleAddressSubmit}
+              onClose={() => setShowAddressForm(false)}
+              isLoading={isAddressLoading}
+            />
           </div>
         </div>
       )}

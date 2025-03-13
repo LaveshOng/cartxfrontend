@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import './AddressForm.scss';
 
-const AddressForm = ({ onSubmit, onClose, initialData }) => {
+const AddressForm = ({ onSubmit, onClose, isLoading }) => {
   const [formData, setFormData] = useState({
-    fullName: initialData?.fullName || '',
-    phoneNumber: initialData?.phoneNumber || '',
-    addressLine1: initialData?.addressLine1 || '',
-    addressLine2: initialData?.addressLine2 || '',
-    city: initialData?.city || '',
-    state: initialData?.state || '',
-    postalCode: initialData?.postalCode || '',
-    country: initialData?.country || 'India',
-    isDefault: initialData?.isDefault || false,
+    fullName: '',
+    phoneNumber: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    country: 'India',
+    isDefault: false,
   });
 
   const handleChange = e => {
@@ -30,122 +30,137 @@ const AddressForm = ({ onSubmit, onClose, initialData }) => {
   return (
     <div className="address-form">
       <div className="form-header">
-        <h2>{initialData ? 'Edit Address' : 'Add New Address'}</h2>
+        <h2>Add New Address</h2>
         <button onClick={onClose} className="close-btn">
-          <i className="fas fa-times"></i>
+          ×
         </button>
       </div>
-
       <form onSubmit={handleSubmit}>
         <div className="form-group">
+          <label htmlFor="fullName">Full Name *</label>
           <input
             type="text"
+            id="fullName"
             name="fullName"
             value={formData.fullName}
             onChange={handleChange}
-            placeholder="Full Name *"
             required
+            disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
+          <label htmlFor="phoneNumber">Phone Number *</label>
           <input
             type="tel"
+            id="phoneNumber"
             name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
-            placeholder="Phone Number *"
             required
+            disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
+          <label htmlFor="addressLine1">Address Line 1 *</label>
           <input
             type="text"
+            id="addressLine1"
             name="addressLine1"
             value={formData.addressLine1}
             onChange={handleChange}
-            placeholder="Address Line 1 *"
             required
+            disabled={isLoading}
           />
         </div>
 
         <div className="form-group">
+          <label htmlFor="addressLine2">Address Line 2</label>
           <input
             type="text"
+            id="addressLine2"
             name="addressLine2"
             value={formData.addressLine2}
             onChange={handleChange}
-            placeholder="Address Line 2 (Optional)"
+            disabled={isLoading}
           />
         </div>
 
         <div className="form-row">
           <div className="form-group">
+            <label htmlFor="city">City *</label>
             <input
               type="text"
+              id="city"
               name="city"
               value={formData.city}
               onChange={handleChange}
-              placeholder="City *"
               required
+              disabled={isLoading}
             />
           </div>
 
           <div className="form-group">
+            <label htmlFor="state">State *</label>
             <input
               type="text"
+              id="state"
               name="state"
               value={formData.state}
               onChange={handleChange}
-              placeholder="State *"
               required
+              disabled={isLoading}
             />
           </div>
         </div>
 
         <div className="form-row">
           <div className="form-group">
+            <label htmlFor="postalCode">Postal Code *</label>
             <input
               type="text"
+              id="postalCode"
               name="postalCode"
               value={formData.postalCode}
               onChange={handleChange}
-              placeholder="Postal Code *"
               required
+              disabled={isLoading}
             />
           </div>
 
           <div className="form-group">
+            <label htmlFor="country">Country</label>
             <input
               type="text"
+              id="country"
               name="country"
               value={formData.country}
               onChange={handleChange}
-              placeholder="Country *"
-              required
+              disabled={isLoading}
             />
           </div>
         </div>
 
-        <div className="form-group checkbox">
+        <div className="form-group checkbox-group">
           <label>
             <input
               type="checkbox"
               name="isDefault"
               checked={formData.isDefault}
               onChange={handleChange}
+              disabled={isLoading}
             />
             Set as default address
           </label>
         </div>
 
         <div className="form-actions">
-          <button type="button" onClick={onClose} className="cancel-btn">
+          <button type="button" onClick={onClose} className="cancel-btn" disabled={isLoading}>
             Cancel
           </button>
-          <button type="submit" className="submit-btn">
-            {initialData ? 'Update Address' : 'Add Address'}
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? 'Adding...' : 'Add Address'}
           </button>
         </div>
       </form>

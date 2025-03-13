@@ -159,7 +159,10 @@ export const apiClient = {
         });
 
         if (response.status === 'success' && Array.isArray(response.data)) {
-          return response.data;
+          return {
+            status: response.status,
+            data: response.data,
+          };
         }
         throw new Error('Invalid response format from server');
       } catch (error) {
@@ -269,7 +272,7 @@ export const apiClient = {
   payment: {
     // Create a checkout session with Stripe
     createCheckoutSession: data =>
-      request('/payment/create-checkout-session', {
+      request('/stripe/create-checkout-session', {
         method: 'POST',
         body: JSON.stringify(data),
       }),

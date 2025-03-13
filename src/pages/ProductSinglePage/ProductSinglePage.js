@@ -37,7 +37,8 @@ const ProductSinglePage = () => {
     }
   }, [cartMessageStatus]);
 
-  let discountedPrice = product?.price - product?.price * (product?.discountPercentage / 100);
+  let discountedPrice =
+    Math.round((product?.price - product?.price * (product?.discountPercentage / 100)) * 100) / 100;
   if (productSingleStatus === STATUS.LOADING) {
     return <Loader />;
   }
@@ -59,7 +60,9 @@ const ProductSinglePage = () => {
   };
 
   const addToCartHandler = product => {
-    let discountedPrice = product?.price - product?.price * (product?.discountPercentage / 100);
+    let discountedPrice =
+      Math.round((product?.price - product?.price * (product?.discountPercentage / 100)) * 100) /
+      100;
     let totalPrice = quantity * discountedPrice;
 
     dispatch(addToCart({ ...product, quantity: quantity, totalPrice, discountedPrice }));

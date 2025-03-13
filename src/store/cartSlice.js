@@ -13,6 +13,11 @@ const storeInLocalStorage = data => {
   localStorage.setItem('cart', JSON.stringify(data));
 };
 
+// Helper function to round off to 2 decimal places
+const roundOff = number => {
+  return Math.round(number * 100) / 100;
+};
+
 const initialState = {
   carts: fetchFromLocalStorage(),
   itemsCount: 0,
@@ -31,7 +36,7 @@ const cartSlice = createSlice({
         const tempCart = state.carts.map(item => {
           if (item.id === action.payload.id) {
             let tempQty = item.quantity + action.payload.quantity;
-            let tempTotalPrice = tempQty * item.price;
+            let tempTotalPrice = roundOff(tempQty * item.price);
 
             return {
               ...item,
@@ -46,7 +51,12 @@ const cartSlice = createSlice({
         state.carts = tempCart;
         storeInLocalStorage(state.carts);
       } else {
-        state.carts.push(action.payload);
+        // Round off the initial price when adding new item
+        const newItem = {
+          ...action.payload,
+          totalPrice: roundOff(action.payload.quantity * action.payload.price),
+        };
+        state.carts.push(newItem);
         storeInLocalStorage(state.carts);
       }
     },
@@ -63,9 +73,11 @@ const cartSlice = createSlice({
     },
 
     getCartTotal: state => {
-      state.totalAmount = state.carts.reduce((cartTotal, cartItem) => {
-        return (cartTotal += cartItem.totalPrice);
-      }, 0);
+      state.totalAmount = roundOff(
+        state.carts.reduce((cartTotal, cartItem) => {
+          return cartTotal + cartItem.totalPrice;
+        }, 0)
+      );
 
       state.itemsCount = state.carts.length;
     },
@@ -79,13 +91,15 @@ const cartSlice = createSlice({
           if (action.payload.type === 'INC') {
             tempQty++;
             if (tempQty === item.stock) tempQty = item.stock;
-            tempTotalPrice = tempQty * item.discountedPrice;
+            const discountedPrice = roundOff(item.discountedPrice);
+            tempTotalPrice = roundOff(tempQty * discountedPrice);
           }
 
           if (action.payload.type === 'DEC') {
             tempQty--;
             if (tempQty < 1) tempQty = 1;
-            tempTotalPrice = tempQty * item.discountedPrice;
+            const discountedPrice = roundOff(item.discountedPrice);
+            tempTotalPrice = roundOff(tempQty * discountedPrice);
           }
 
           return { ...item, quantity: tempQty, totalPrice: tempTotalPrice };
