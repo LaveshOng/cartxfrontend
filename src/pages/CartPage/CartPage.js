@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { shopping_cart } from '../../utils/images';
 import { Link, useNavigate } from 'react-router-dom';
 import { formatPrice } from '../../utils/helpers';
+import { setSignupModalOn } from '../../store/signupModalSlice';
 import {
   getAllCarts,
   removeFromCart,
@@ -13,6 +14,7 @@ import {
 } from '../../store/cartSlice';
 import { useToast } from '../../context/ToastContext';
 import { checkAuth } from '../../store/authSlice';
+
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,7 +37,7 @@ const CartPage = () => {
         if (!result) {
           console.log('❌ User is still not authenticated after checkAuth.');
           showToast('Please login to continue with checkout', 'info');
-          navigate('/login');
+          dispatch(setSignupModalOn());
           return;
         }
       }
@@ -45,7 +47,7 @@ const CartPage = () => {
     } catch (error) {
       console.error('⚠️ Auth check failed:', error);
       showToast('Please login to continue with checkout', 'error');
-      navigate('/login');
+      dispatch(setSignupModalOn());
     }
   };
   // const handleCheckout = async () => {
@@ -60,7 +62,7 @@ const CartPage = () => {
   //     if (!authState.isAuthenticated) {
   //       console.log('❌ User is still not authenticated after checkAuth.');
   //       showToast('Please login to continue with checkout', 'info');
-  //       navigate('/login');
+  //         dispatch(setSignupModalOn());
   //       return;
   //     }
 
@@ -69,7 +71,7 @@ const CartPage = () => {
   //   } catch (error) {
   //     console.error('⚠️ Auth check failed:', error);
   //     showToast('Please login to continue with checkout', 'error');
-  //     navigate('/login');
+  //       dispatch(setSignupModalOn());
   //   }
   // };
   if (carts.length === 0) {

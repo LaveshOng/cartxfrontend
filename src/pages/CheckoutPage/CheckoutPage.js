@@ -6,6 +6,7 @@ import { apiClient } from '../../utils/apiClient';
 import { useToast } from '../../context/ToastContext';
 import AddressForm from './AddressForm';
 import './CheckoutPage.scss';
+import { setSignupModalOn } from '../../store/signupModalSlice';
 import { checkAuth } from '../../store/authSlice';
 
 const CheckoutPage = () => {
@@ -28,25 +29,7 @@ const CheckoutPage = () => {
     checkAuthAndFetchAddresses();
     dispatch(getCartTotal());
   }, [dispatch]);
-  console.log('👤 User Data:', authState.user);
-  console.log(selectedAddress, 'selectedAddress');
   const user = authState.user;
-  // const checkAuthAndFetchAddresses = async () => {
-  //   try {
-  //     const response = await apiClient.auth.checkAuth();
-  //     if (!response.isAuthenticated) {
-  //       showToast('Please login to continue with checkout', 'info');
-  //       navigate('/login');
-  //       return;
-  //     }
-  //     await fetchAddresses();
-  //   } catch (error) {
-  //     console.error('Auth check failed:', error);
-  //     showToast('Please login to continue with checkout', 'error');
-  //     navigate('/login');
-  //   }
-  // };
-  // const authState = useSelector(state => state.auth);
 
   const checkAuthAndFetchAddresses = async (dispatch, navigate, showToast) => {
     console.log('🚀 Checking authentication and fetching addresses...');
@@ -63,7 +46,8 @@ const CheckoutPage = () => {
         if (!result) {
           console.log('❌ User is still not authenticated after checkAuth.');
           // showToast('Please login to continue with checkout', 'info');
-          navigate('/login');
+          dispatch(setSignupModalOn());
+
           return;
         }
       }
@@ -73,7 +57,7 @@ const CheckoutPage = () => {
     } catch (error) {
       console.error('⚠️ Auth check failed:', error);
       // showToast('Please login to continue with checkout', 'error');
-      navigate('/login');
+      dispatch(setSignupModalOn());
     }
   };
 
