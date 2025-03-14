@@ -11,32 +11,67 @@ import {
   clearCart,
   getCartTotal,
 } from '../../store/cartSlice';
-import { apiClient } from '../../utils/apiClient';
 import { useToast } from '../../context/ToastContext';
-
+import { checkAuth } from '../../store/authSlice';
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { showToast } = useToast();
   const carts = useSelector(getAllCarts);
   const { itemsCount, totalAmount } = useSelector(state => state.cart);
-
+  const authState = useSelector(state => state.auth);
   const handleCheckout = async () => {
+    console.log('🚀 Initial Auth State:', authState);
+
     try {
-      const response = await apiClient.auth.checkAuth();
-      if (!response.isAuthenticated) {
-        showToast('Please login to continue with checkout', 'info');
-        navigate('/login');
-        return;
+      // If user is not authenticated, check authentication
+      if (!authState.isAuthenticated) {
+        console.log('🔍 User is not authenticated, dispatching checkAuth...');
+        const result = await dispatch(checkAuth()).unwrap(); // ✅ Use `unwrap()` to get the direct result
+
+        console.log('🔄 checkAuth result:', result);
+
+        // If authentication failed, redirect to login
+        if (!result) {
+          console.log('❌ User is still not authenticated after checkAuth.');
+          showToast('Please login to continue with checkout', 'info');
+          navigate('/login');
+          return;
+        }
       }
+
+      console.log('✅ Authentication successful, navigating to checkout...');
       navigate('/checkout');
     } catch (error) {
-      console.error('Auth check failed:', error);
+      console.error('⚠️ Auth check failed:', error);
       showToast('Please login to continue with checkout', 'error');
       navigate('/login');
     }
   };
+  // const handleCheckout = async () => {
+  //   try {
+  //     // If user is not authenticated, try checking authentication
+  //     if (!authState.isAuthenticated) {
+  //       console.log('🔍 User is not authenticated, dispatching checkAuth...');
+  //       await dispatch(checkAuth());
+  //     } else {
+  //       console.log('✅ User is already authenticated, proceeding to checkout...');
+  //     }
+  //     if (!authState.isAuthenticated) {
+  //       console.log('❌ User is still not authenticated after checkAuth.');
+  //       showToast('Please login to continue with checkout', 'info');
+  //       navigate('/login');
+  //       return;
+  //     }
 
+  //     console.log('✅ Authentication successful, navigating to checkout...');
+  //     navigate('/checkout');
+  //   } catch (error) {
+  //     console.error('⚠️ Auth check failed:', error);
+  //     showToast('Please login to continue with checkout', 'error');
+  //     navigate('/login');
+  //   }
+  // };
   if (carts.length === 0) {
     return (
       <div className="container my-5">

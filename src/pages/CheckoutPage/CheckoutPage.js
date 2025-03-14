@@ -6,6 +6,7 @@ import { apiClient } from '../../utils/apiClient';
 import { useToast } from '../../context/ToastContext';
 import AddressForm from './AddressForm';
 import './CheckoutPage.scss';
+import { checkAuth } from '../../store/authSlice';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const CheckoutPage = () => {
   const { showToast } = useToast();
   const carts = useSelector(getAllCarts);
   const { itemsCount, totalAmount } = useSelector(state => state.cart);
+  // const { user } = useSelector(state => state.auth);
+  const authState = useSelector(state => state.auth);
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
@@ -25,20 +28,51 @@ const CheckoutPage = () => {
     checkAuthAndFetchAddresses();
     dispatch(getCartTotal());
   }, [dispatch]);
-
+  console.log('👤 User Data:', authState.user);
   console.log(selectedAddress, 'selectedAddress');
-  const checkAuthAndFetchAddresses = async () => {
+  const user = authState.user;
+  // const checkAuthAndFetchAddresses = async () => {
+  //   try {
+  //     const response = await apiClient.auth.checkAuth();
+  //     if (!response.isAuthenticated) {
+  //       showToast('Please login to continue with checkout', 'info');
+  //       navigate('/login');
+  //       return;
+  //     }
+  //     await fetchAddresses();
+  //   } catch (error) {
+  //     console.error('Auth check failed:', error);
+  //     showToast('Please login to continue with checkout', 'error');
+  //     navigate('/login');
+  //   }
+  // };
+  // const authState = useSelector(state => state.auth);
+
+  const checkAuthAndFetchAddresses = async (dispatch, navigate, showToast) => {
+    console.log('🚀 Checking authentication and fetching addresses...');
+
     try {
-      const response = await apiClient.auth.checkAuth();
-      if (!response.isAuthenticated) {
-        showToast('Please login to continue with checkout', 'info');
-        navigate('/login');
-        return;
+      // ✅ If user is not authenticated, dispatch checkAuth
+      if (!authState.isAuthenticated) {
+        console.log('🔍 User not authenticated, dispatching checkAuth...');
+        const result = await dispatch(checkAuth()).unwrap();
+
+        console.log('🔄 checkAuth result:', result);
+
+        // If authentication fails, redirect to login
+        if (!result) {
+          console.log('❌ User is still not authenticated after checkAuth.');
+          // showToast('Please login to continue with checkout', 'info');
+          navigate('/login');
+          return;
+        }
       }
+
+      console.log('✅ Authentication successful, fetching addresses...');
       await fetchAddresses();
     } catch (error) {
-      console.error('Auth check failed:', error);
-      showToast('Please login to continue with checkout', 'error');
+      console.error('⚠️ Auth check failed:', error);
+      // showToast('Please login to continue with checkout', 'error');
       navigate('/login');
     }
   };
@@ -99,24 +133,32 @@ const CheckoutPage = () => {
       return;
     }
 
+    if (!user) {
+      showToast('Please login to continue', 'error');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await apiClient.payment.createCheckoutSession({
         items: carts.map(item => ({
-          name: item.title,
+          id: item.id,
+          title: item.title,
+          description: item.description,
+          thumbnail: item.thumbnail,
           price: item.discountedPrice,
           quantity: item.quantity,
         })),
+        userId: user.id,
         addressId: selectedAddress._id,
         deliveryCharge,
       });
 
-      if (response.url) {
-        window.location.href = response.url;
-      }
+      // Redirect to Stripe checkout
+      window.location.href = response.url;
     } catch (error) {
       console.error('Checkout failed:', error);
-      showToast('Failed to process checkout', 'error');
+      showToast(error.message || 'Failed to process checkout', 'error');
     } finally {
       setIsLoading(false);
     }

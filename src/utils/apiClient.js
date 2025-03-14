@@ -126,6 +126,7 @@ export const apiClient = {
         }
 
         const response = await request('/auth/verify');
+        console.log(response, 'response=====');
         return {
           isAuthenticated: true,
           user: response.user,
