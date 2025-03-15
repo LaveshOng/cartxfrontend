@@ -21,7 +21,7 @@ const CartPage = () => {
   const { itemsCount, totalAmount } = useSelector(state => state.cart);
   const authState = useSelector(state => state.auth);
   const handleCheckout = async () => {
-    console.log('🚀 Initial Auth State:', authState);
+    // console.log('🚀 Initial Auth State:', authState);
 
     try {
       // If user is not authenticated, check authentication
