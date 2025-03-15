@@ -1,0 +1,50 @@
+.social-login {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 1rem auto;
+
+  .social-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #333;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    img {
+      width: 24px;
+      height: 24px;
+    }
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    &.google {
+      &:hover {
+        border-color: #4285f4;
+      }
+    }
+
+    &.microsoft {
+      &:hover {
+        border-color: #00a4ef;
+      }
+    }
+
+    &.apple {
+      &:hover {
+        border-color: #000;
+      }
+    }
+  }
+}

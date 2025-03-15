@@ -1,9 +1,10 @@
-@import "../../App.scss";
+@import '../../App.scss';
 
 .product-item {
   position: relative;
   border-radius: 8px;
-  box-shadow: rgba(50, 50, 93, 0.05) 0px 2px 5px -1px,
+  box-shadow:
+    rgba(50, 50, 93, 0.05) 0px 2px 5px -1px,
     rgba(0, 0, 0, 0.05) 0px 1px 3px -1px;
   transition: $transition-ease;
 
@@ -16,11 +17,13 @@
     font-size: 13px;
     text-transform: capitalize;
     padding: 0.2rem 1rem;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 1px 2px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    box-shadow:
+      rgba(0, 0, 0, 0.05) 0px 1px 2px,
+      rgba(0, 0, 0, 0.24) 0px 1px 2px;
 
     &::after {
       position: absolute;
-      content: "";
+      content: '';
       left: 0;
       top: 100%;
       transform: translateY(-5px);
@@ -81,7 +84,7 @@
       }
 
       &::after {
-        content: "";
+        content: '';
         position: absolute;
         top: calc(100% + 6px);
         height: 1px;
@@ -92,7 +95,8 @@
   }
 
   &:hover {
-    box-shadow: rgba(50, 50, 93, 0.1) 0px 2px 5px -1px,
+    box-shadow:
+      rgba(50, 50, 93, 0.1) 0px 2px 5px -1px,
       rgba(0, 0, 0, 0.1) 0px 1px 20px -1px;
   }
 }
