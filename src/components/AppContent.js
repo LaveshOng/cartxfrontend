@@ -19,7 +19,7 @@ import CheckoutPage from '../pages/CheckoutPage/CheckoutPage';
 
 function AppContent() {
   const dispatch = useDispatch();
-
+  console.log('heelo');
   return (
     <>
       <Header />
