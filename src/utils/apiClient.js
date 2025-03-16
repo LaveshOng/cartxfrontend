@@ -1,51 +1,51 @@
-const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8001';
-import { getTokens, refreshAccessToken, clearTokens, setTokens } from './tokenManager';
 import axios from 'axios';
+import { getTokens, refreshAccessToken, clearTokens, setTokens } from './tokenManager';
 
+const BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+
+// API request function with automatic token handling
 const request = async (endpoint, options = {}) => {
   const url = `${BASE_URL}${endpoint}`;
-  const { accessToken } = getTokens();
+  let { accessToken } = getTokens();
 
-  const headers = {
+  let headers = {
     'Content-Type': 'application/json',
-    ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
     ...options.headers,
   };
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers,
-    });
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
 
-    // Handle token expiration
+  try {
+    let response = await fetch(url, { ...options, headers });
+
+    // Handle token expiration (401)
     if (response.status === 401) {
       const error = await response.json();
       if (error.code === 'TOKEN_EXPIRED') {
-        // Try to refresh the token
-        const newAccessToken = await refreshAccessToken();
-        if (!newAccessToken) {
+        try {
+          const newAccessToken = await refreshAccessToken();
+          if (!newAccessToken) {
+            clearTokens();
+            localStorage.removeItem('user');
+            window.location.href = '/login';
+            throw new Error('Session expired. Please login again.');
+          }
+
+          // Retry the request with the new token
+          headers.Authorization = `Bearer ${newAccessToken}`;
+          response = await fetch(url, { ...options, headers });
+
+          if (!response.ok) {
+            throw new Error(await response.json());
+          }
+        } catch (refreshError) {
           clearTokens();
+          localStorage.removeItem('user');
           window.location.href = '/login';
-          throw new Error('Session expired. Please login again.');
+          throw new Error('Failed to refresh token. Please login again.');
         }
-
-        // Retry the original request with new token
-        const retryHeaders = {
-          ...headers,
-          Authorization: `Bearer ${newAccessToken}`,
-        };
-
-        const retryResponse = await fetch(url, {
-          ...options,
-          headers: retryHeaders,
-        });
-
-        if (!retryResponse.ok) {
-          throw new Error(await retryResponse.json());
-        }
-
-        return await retryResponse.json();
       }
     }
 
@@ -58,12 +58,14 @@ const request = async (endpoint, options = {}) => {
   } catch (error) {
     if (error.message.includes('Failed to refresh token')) {
       clearTokens();
+      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     throw error;
   }
 };
 
+// API Client with categorized endpoints
 export const apiClient = {
   auth: {
     register: data =>
@@ -151,8 +153,43 @@ export const apiClient = {
     },
   },
 
+  orders: {
+    fetchUserOrders: async userId => {
+      try {
+        const { accessToken } = getTokens();
+        if (!accessToken) throw new Error('User not authenticated');
+        if (!userId) throw new Error('User ID is required');
+
+        return await request('/orders/user/' + userId, {
+          method: 'GET',
+        });
+      } catch (error) {
+        console.error('Failed to fetch orders:', error);
+        throw error;
+      }
+    },
+
+    fetchOrderDetails: orderId => {
+      if (!orderId) throw new Error('Order ID is required');
+      return request(`/orders/${orderId}`, {
+        method: 'GET',
+      });
+    },
+
+    cancelOrder: async orderId => {
+      try {
+        if (!orderId) throw new Error('Order ID is required');
+        return await request(`/orders/${orderId}/cancel`, {
+          method: 'POST',
+        });
+      } catch (error) {
+        console.error('Failed to cancel order:', error);
+        throw error;
+      }
+    },
+  },
+
   address: {
-    // Get all addresses for the current user
     getAll: async () => {
       try {
         const response = await request('/address', {
@@ -171,107 +208,30 @@ export const apiClient = {
         throw error;
       }
     },
+    add: async addressData =>
+      request('/address', {
+        method: 'POST',
+        body: JSON.stringify(addressData),
+      }),
 
-    // Add a new address
-    add: async addressData => {
-      try {
-        // Validate required fields
-        const requiredFields = [
-          'fullName',
-          'phoneNumber',
-          'addressLine1',
-          'city',
-          'state',
-          'postalCode',
-        ];
-        const missingFields = requiredFields.filter(field => !addressData[field]);
+    update: async (addressId, addressData) =>
+      request(`/address/${addressId}`, {
+        method: 'PUT',
+        body: JSON.stringify(addressData),
+      }),
 
-        if (missingFields.length > 0) {
-          throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
-        }
+    delete: async addressId =>
+      request(`/address/${addressId}`, {
+        method: 'DELETE',
+      }),
 
-        const response = await request('/address', {
-          method: 'POST',
-          body: JSON.stringify(addressData),
-        });
-
-        if (response.status === 'success' && response.data) {
-          return response.data;
-        }
-        throw new Error('Failed to add address');
-      } catch (error) {
-        console.error('Failed to add address:', error);
-        throw error;
-      }
-    },
-
-    // Update an existing address
-    update: async (addressId, addressData) => {
-      try {
-        if (!addressId) {
-          throw new Error('Address ID is required');
-        }
-
-        const response = await request(`/address/${addressId}`, {
-          method: 'PUT',
-          body: JSON.stringify(addressData),
-        });
-
-        if (response.status === 'success' && response.data) {
-          return response.data;
-        }
-        throw new Error('Failed to update address');
-      } catch (error) {
-        console.error('Failed to update address:', error);
-        throw error;
-      }
-    },
-
-    // Delete an address
-    delete: async addressId => {
-      try {
-        if (!addressId) {
-          throw new Error('Address ID is required');
-        }
-
-        const response = await request(`/address/${addressId}`, {
-          method: 'DELETE',
-        });
-
-        if (response.status === 'success') {
-          return true;
-        }
-        throw new Error('Failed to delete address');
-      } catch (error) {
-        console.error('Failed to delete address:', error);
-        throw error;
-      }
-    },
-
-    // Set an address as default
-    setDefault: async addressId => {
-      try {
-        if (!addressId) {
-          throw new Error('Address ID is required');
-        }
-
-        const response = await request(`/address/${addressId}/set-default`, {
-          method: 'PATCH',
-        });
-
-        if (response.status === 'success' && response.data) {
-          return response.data;
-        }
-        throw new Error('Failed to set address as default');
-      } catch (error) {
-        console.error('Failed to set default address:', error);
-        throw error;
-      }
-    },
+    setDefault: async addressId =>
+      request(`/address/${addressId}/set-default`, {
+        method: 'PATCH',
+      }),
   },
 
   payment: {
-    // Create a checkout session with Stripe
     createCheckoutSession: data =>
       request('/stripe/create-checkout-session', {
         method: 'POST',

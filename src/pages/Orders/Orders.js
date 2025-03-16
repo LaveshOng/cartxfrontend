@@ -10,8 +10,10 @@ import {
   getCancellingOrder,
   getCancelError,
 } from '../../store/orderSlice';
+
 import { useToast } from '../../context/ToastContext';
 import './Orders.scss';
+import { checkAuth } from '../../store/authSlice';
 
 const OrderStatus = ({ status }) => {
   const getStatusColor = () => {
@@ -134,17 +136,30 @@ const OrderCard = ({ order }) => {
 
 const Orders = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector(state => state.auth);
+  const authState = useSelector(state => state.auth);
   const orders = useSelector(getAllOrders);
   const isLoading = useSelector(getOrdersLoading);
   const error = useSelector(getOrdersError);
   const [activeFilter, setActiveFilter] = useState('all');
-  console.log('orders', user);
+  console.log('ORDERS');
   useEffect(() => {
-    if (user?._id) {
-      dispatch(fetchUserOrders(user._id));
+    const initializeOrders = async () => {
+      console.log('🔄 Running initializeOrders useEffect');
+      console.log(authState);
+      if (authState.isAuthenticated && authState.user?.id) {
+        console.log('📦 Fetching orders for user:', authState.user.id);
+        const orderDetail = await dispatch(fetchUserOrders()).unwrap();
+        console.log(orderDetail, 'orderDetail');
+      } else if (!authState.isAuthenticated && !authState.isLoading) {
+        console.log('🔍 Checking authentication');
+        await dispatch(checkAuth()).unwrap();
+      }
+    };
+
+    if (!authState.isLoading) {
+      initializeOrders();
     }
-  }, [dispatch, user?._id]);
+  }, [authState.isAuthenticated, authState.user?._id]);
 
   const filterOrders = status => {
     setActiveFilter(status);

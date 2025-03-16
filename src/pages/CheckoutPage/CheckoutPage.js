@@ -26,11 +26,12 @@ const CheckoutPage = () => {
   const deliveryCharge = 40; // Fixed delivery charge for now
   console.log(carts, 'carts');
   useEffect(() => {
-    checkAuthAndFetchAddresses();
+    checkAuthAndFetchAddresses(dispatch);
+    console.log('checking the authors');
     dispatch(getCartTotal());
   }, [dispatch]);
   const user = authState.user;
-
+  console.log(addresses, 'checker.', selectedAddress);
   const checkAuthAndFetchAddresses = async (dispatch, navigate, showToast) => {
     console.log('🚀 Checking authentication and fetching addresses...');
 
@@ -65,7 +66,7 @@ const CheckoutPage = () => {
     try {
       setIsAddressLoading(true);
       const response = await apiClient.address.getAll();
-      console.log(response, 'response');
+      console.log(response, 'response of the address api ');
       if (response.status === 'success') {
         setAddresses(response.data);
         const defaultAddress = response.data.find(addr => addr.isDefault);

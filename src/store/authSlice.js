@@ -2,12 +2,18 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiClient } from '../utils/apiClient';
 import { getTokens, setTokens, clearTokens } from '../utils/tokenManager';
 
-const initialState = {
-  user: null,
-  isAuthenticated: false,
-  isLoading: false,
-  error: null,
+// Get initial state from localStorage if available
+const getInitialState = () => {
+  const storedUser = localStorage.getItem('user');
+  return {
+    user: storedUser ? JSON.parse(storedUser) : null,
+    isAuthenticated: !!storedUser,
+    isLoading: false,
+    error: null,
+  };
 };
+
+const initialState = getInitialState();
 
 // ✅ Async thunk for checking authentication
 export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, { rejectWithValue }) => {
@@ -23,13 +29,17 @@ export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, { rejectWi
     console.log('✅ Auth check response:', response);
 
     if (response.isAuthenticated) {
-      return response.user; // Pass user data to Redux state
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(response.user));
+      return response.user;
     } else {
+      localStorage.removeItem('user');
       clearTokens();
       return rejectWithValue('Not authenticated');
     }
   } catch (error) {
     console.error('⚠️ Auth check failed:', error);
+    localStorage.removeItem('user');
     clearTokens();
     return rejectWithValue(error.message || 'Authentication failed');
   }
@@ -43,7 +53,9 @@ export const login = createAsyncThunk('auth/login', async (credentials, { reject
 
     if (response.status === 'success') {
       setTokens(response.data.accessToken, response.data.refreshToken);
-      return response.data; // Store user data in Redux
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data.user;
     } else {
       return rejectWithValue(response.message);
     }
@@ -60,7 +72,9 @@ export const signup = createAsyncThunk('auth/signup', async (userData, { rejectW
 
     if (response.status === 'success') {
       setTokens(response.data.accessToken, response.data.refreshToken);
-      return response.data;
+      // Store user in localStorage
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data.user;
     } else {
       return rejectWithValue(response.message);
     }
@@ -74,6 +88,7 @@ export const logoutUser = createAsyncThunk('auth/logout', async (_, { rejectWith
   try {
     await apiClient.auth.logout();
     clearTokens();
+    localStorage.removeItem('user');
     return true;
   } catch (error) {
     return rejectWithValue(error.message || 'Logout failed');
@@ -87,6 +102,12 @@ const authSlice = createSlice({
   reducers: {
     setError: (state, action) => {
       state.error = action.payload;
+    },
+    // Add a reducer to update user data
+    updateUser: (state, action) => {
+      state.user = action.payload;
+      state.isAuthenticated = true;
+      localStorage.setItem('user', JSON.stringify(action.payload));
     },
   },
   extraReducers: builder => {
@@ -106,6 +127,7 @@ const authSlice = createSlice({
         state.user = null;
         state.isAuthenticated = false;
         state.error = action.payload;
+        localStorage.removeItem('user');
       })
       // 🔹 Login
       .addCase(login.pending, state => {
@@ -144,5 +166,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setError } = authSlice.actions;
+export const { setError, updateUser } = authSlice.actions;
 export default authSlice.reducer;

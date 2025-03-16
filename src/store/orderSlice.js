@@ -4,36 +4,51 @@ import { apiClient } from '../utils/apiClient';
 // Async thunks
 export const fetchUserOrders = createAsyncThunk(
   'orders/fetchUserOrders',
-  async (userId, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
-      const response = await apiClient.get(`/orders/user/${userId}`);
-      return response.data;
+      const { auth } = getState();
+      if (!auth.isAuthenticated || !auth.user?.id) {
+        console.warn('⚠️ User not authenticated, skipping fetchUserOrders');
+        return rejectWithValue('User not authenticated');
+      }
+
+      console.log('📦 Fetching orders for user:', auth.user.id);
+      const response = await apiClient.orders.fetchUserOrders(auth.user.id);
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch orders');
+      return rejectWithValue(error.message || 'Failed to fetch orders');
     }
   }
 );
 
 export const fetchOrderDetails = createAsyncThunk(
   'orders/fetchOrderDetails',
-  async (orderId, { rejectWithValue }) => {
+  async (orderId, { rejectWithValue, getState }) => {
     try {
-      const response = await apiClient.get(`/orders/${orderId}`);
-      return response.data;
+      const { auth } = getState();
+      if (!auth.user?.id) {
+        throw new Error('User not authenticated');
+      }
+      const response = await apiClient.orders.fetchOrderDetails(orderId);
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to fetch order details');
+      return rejectWithValue(error.message || 'Failed to fetch order details');
     }
   }
 );
 
 export const cancelOrder = createAsyncThunk(
   'orders/cancelOrder',
-  async (orderId, { rejectWithValue }) => {
+  async (orderId, { rejectWithValue, getState }) => {
     try {
-      const response = await apiClient.post(`/orders/${orderId}/cancel`);
-      return response.data;
+      const { auth } = getState();
+      if (!auth.user?.id) {
+        throw new Error('User not authenticated');
+      }
+      const response = await apiClient.orders.cancelOrder(orderId);
+      return response;
     } catch (error) {
-      return rejectWithValue(error.response?.data?.message || 'Failed to cancel order');
+      return rejectWithValue(error.message || 'Failed to cancel order');
     }
   }
 );
