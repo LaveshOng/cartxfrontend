@@ -6,6 +6,7 @@ import cartReducer from './cartSlice';
 import searchReducer from './searchSlice';
 import signupModalReducer from './signupModalSlice';
 import authReducer from './authSlice';
+import orderReducer from './orderSlice';
 
 const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ const store = configureStore({
     search: searchReducer,
     signupModal: signupModalReducer,
     auth: authReducer,
+    orders: orderReducer,
   },
 });
 
