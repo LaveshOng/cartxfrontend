@@ -8,6 +8,7 @@ import SignupPage from './SignupPage';
 import SigninPage from './SigninPage';
 import VerifyEmail from './VerifyEmail/VerifyEmail';
 import CheckoutPage from './CheckoutPage/CheckoutPage';
+import Profile from './Profile/Profile';
 
 export {
   Home,
@@ -20,4 +21,5 @@ export {
   SigninPage,
   VerifyEmail,
   CheckoutPage,
+  Profile,
 };

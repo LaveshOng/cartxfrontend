@@ -7,6 +7,7 @@ import searchReducer from './searchSlice';
 import signupModalReducer from './signupModalSlice';
 import authReducer from './authSlice';
 import orderReducer from './orderSlice';
+import profileReducer from './profileSlice';
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     signupModal: signupModalReducer,
     auth: authReducer,
     orders: orderReducer,
+    profile: profileReducer,
   },
 });
 

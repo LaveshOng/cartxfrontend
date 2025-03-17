@@ -102,6 +102,14 @@ const Navbar = () => {
                 <i className="fas fa-user-circle text-blue-600"></i>
               </button>
 
+              {/* Orders Link */}
+              <button
+                className="orders-btn px-3 py-2 bg-gray-200 rounded-full hover:bg-gray-300 transition-colors ml-3"
+                onClick={() => navigate('/orders')}
+              >
+                <i className="fas fa-box text-blue-600"></i>
+              </button>
+
               {/* Logout Button */}
               <button
                 className="logout-btn px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors ml-3"

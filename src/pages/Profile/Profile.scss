@@ -1,0 +1,296 @@
+.profile-page {
+  padding: 2rem 0;
+  background-color: #f1f3f6;
+  min-height: calc(100vh - 64px); // Adjust based on your navbar height
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .profile-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    background-color: transparent;
+  }
+
+  // Left Sidebar Styles
+  .profile-sidebar {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+
+    .user-brief {
+      padding: 1.5rem;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .user-avatar {
+        width: 50px;
+        height: 50px;
+        background-color: #2874f0;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+
+      .user-info {
+        p {
+          color: #666;
+          margin: 0;
+        }
+
+        h3 {
+          margin: 0.25rem 0 0;
+          font-size: 1.1rem;
+          color: #333;
+        }
+      }
+    }
+
+    .profile-nav {
+      padding: 1rem 0;
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem 1.5rem;
+        width: 100%;
+        border: none;
+        background: none;
+        color: #333;
+        font-size: 0.95rem;
+        text-align: left;
+        cursor: pointer;
+        text-decoration: none;
+
+        i {
+          font-size: 1.1rem;
+          width: 20px;
+          color: #666;
+        }
+
+        &:hover {
+          background-color: #f5f5f5;
+          color: #2874f0;
+
+          i {
+            color: #2874f0;
+          }
+        }
+
+        &.active {
+          background-color: #f5f5f5;
+          color: #2874f0;
+          font-weight: 500;
+
+          i {
+            color: #2874f0;
+          }
+        }
+      }
+    }
+  }
+
+  // Main Content Styles
+  .profile-content {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #e0e0e0;
+
+      h2 {
+        margin: 0;
+        font-size: 1.25rem;
+        color: #333;
+      }
+
+      .edit-btn,
+      .add-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: #2874f0;
+        color: white;
+        cursor: pointer;
+        font-size: 0.9rem;
+
+        &:hover {
+          background-color: #1c5ad4;
+        }
+      }
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #666;
+        font-size: 0.9rem;
+      }
+
+      p {
+        margin: 0;
+        color: #333;
+        font-size: 1rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        color: #333;
+
+        &:focus {
+          outline: none;
+          border-color: #2874f0;
+        }
+      }
+    }
+
+    .form-actions {
+      margin-top: 2rem;
+
+      .save-btn {
+        padding: 0.75rem 2rem;
+        background-color: #2874f0;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #1c5ad4;
+        }
+      }
+    }
+  }
+
+  // Settings Section Styles
+  .settings-section {
+    .settings-options {
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e0e0e0;
+
+        h3 {
+          margin: 0;
+          font-size: 1rem;
+          color: #333;
+        }
+
+        .change-btn {
+          padding: 0.5rem 1rem;
+          background-color: #fff;
+          border: 1px solid #2874f0;
+          color: #2874f0;
+          border-radius: 4px;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+        }
+
+        &.danger {
+          .delete-btn {
+            padding: 0.5rem 1rem;
+            background-color: #fff;
+            border: 1px solid #ff4343;
+            color: #ff4343;
+            border-radius: 4px;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #fff0f0;
+            }
+          }
+        }
+
+        // Toggle Switch
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 50px;
+          height: 24px;
+
+          input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+
+            &:checked + .slider {
+              background-color: #2874f0;
+
+              &:before {
+                transform: translateX(26px);
+              }
+            }
+          }
+
+          .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+
+            &:before {
+              position: absolute;
+              content: '';
+              height: 16px;
+              width: 16px;
+              left: 4px;
+              bottom: 4px;
+              background-color: white;
+              transition: 0.4s;
+              border-radius: 50%;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Responsive Design
+  @media (max-width: 768px) {
+    .profile-container {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-sidebar {
+      margin-bottom: 1rem;
+    }
+  }
+}

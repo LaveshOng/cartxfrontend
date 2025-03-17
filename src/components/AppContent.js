@@ -17,6 +17,7 @@ import VerifyEmail from '../pages/VerifyEmail/VerifyEmail';
 import AuthCallback from '../pages/AuthCallback/AuthCallback';
 import CheckoutPage from '../pages/CheckoutPage/CheckoutPage';
 import Orders from '../pages/Orders/Orders';
+import Profile from '../pages/Profile/Profile';
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -45,7 +46,10 @@ function AppContent() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         {/* social auth callback */}
         <Route path="/auth/success" element={<AuthCallback />} />
+        {/* orders */}
         <Route path="/orders" element={<Orders />} />
+        {/* profile */}
+        <Route path="/profile" element={<Profile />} />
       </Routes>
 
       <Footer />

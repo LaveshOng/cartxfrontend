@@ -58,7 +58,7 @@ const HomePage = () => {
 
             <div className="categories-item">
               <div className="title-md">
-                <h3>{categories[0]?.name}==========================</h3>
+                <h3>{categories[0]?.name}</h3>
               </div>
               {productStatus === STATUS.LOADING ? (
                 <Loader />
